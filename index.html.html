@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Hello — Bright</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#000;
+    --card:#071428;
+    --accent1:#ff5edf;
+    --accent2:#00f5a0;
+    --accent3:#ffd500;
+    --muted:rgba(255,255,255,0.12);
+  }
+  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,system-ui,Segoe UI,Arial}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:2rem}
+  .card{
+    background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid var(--muted);backdrop-filter: blur(6px);
+    padding:2rem;border-radius:18px;max-width:520px;width:100%;
+    box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:center;color:white;
+  }
+  h1{font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 .6rem;display:flex;gap:.6rem;align-items:center;justify-content:center}
+  .wave{display:inline-block;transform-origin:70% 70%;font-size:1.2em;
+    animation:wave 1.6s ease-in-out infinite}
+  @keyframes wave{
+    0%{transform:rotate(0)}
+    15%{transform:rotate(14deg)}
+    30%{transform:rotate(-8deg)}
+    45%{transform:rotate(14deg)}
+    60%{transform:rotate(-4deg)}
+    100%{transform:rotate(0)}
+  }
+  .greet{background:linear-gradient(90deg,var(--accent1),var(--accent2),var(--accent3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+  .sub{color:rgba(255,255,255,0.7);margin:.6rem 0 1.2rem}
+  .controls{display:flex;gap:.6rem;align-items:center;justify-content:center;flex-wrap:wrap}
+  input{padding:.6rem .8rem;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+    background:transparent;color:white;min-width:180px}
+  button{padding:.6rem .9rem;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+  .save{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#021;}
+  .clear{background:transparent;border:1px solid rgba(255,255,255,0.08);color:white}
+  footer{margin-top:1rem;font-size:.85rem;color:rgba(255,255,255,0.45)}
+  .sparkle{position:absolute;pointer-events:none;inset:0;background:
+    radial-gradient(circle at 10% 20%, rgba(255,94,223,0.06), transparent 8%),
+    radial-gradient(circle at 80% 80%, rgba(0,245,160,0.04), transparent 10%);
+    mix-blend-mode:screen}
+  .pos{position:relative}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="card pos">
+    <div class="sparkle" aria-hidden="true"></div>
+    <h1>
+      <span class="wave" aria-hidden="true">👋</span>
+      <span class="greet" id="g">Hello, World!</span>
+    </h1>
+    <p class="sub">Save your name — waves and bright vibes will remember it for next time ✨</p>
+    <div class="controls" role="group" aria-label="Name controls">
+      <input id="i" placeholder="Type your name" aria-label="Your name">
+      <button id="s" class="save">Save</button>
+      <button id="c" class="clear">Clear</button>
+    </div>
+    <footer id="hint">Stored locally using <code>localStorage</code>.</footer>
+  </div>
+</div>
+
+<script>
+const g=document.getElementById('g'), i=document.getElementById('i'),
+      s=document.getElementById('s'), c=document.getElementById('c'),
+      hint=document.getElementById('hint');
+function render(name){
+  g.textContent = name ? `Hello, ${name}!` : 'Hello, World!';
+  // keep waving emoji visually present
+  g.prepend(document.querySelector('.wave'));
+}
+const stored = localStorage.getItem('name');
+if(stored){ i.value = stored; render(stored); }
+s.onclick = () => {
+  const v = i.value.trim();
+  if(v) localStorage.setItem('name', v);
+  else localStorage.removeItem('name');
+  render(v);
+  hint.textContent = v ? 'Saved — refresh to see persistence!' : 'Cleared — no name stored.';
+}
+c.onclick = () => { localStorage.removeItem('name'); i.value=''; render(''); hint.textContent='Cleared.' }
+i.addEventListener('keydown', e=>{ if(e.key==='Enter') s.click() })
+</script>
+</body></html>
