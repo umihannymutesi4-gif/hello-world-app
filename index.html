@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   :root{
-    --bg:#000;
+    --bg: radial-gradient(circle at 10% 10%, #061322 0%, #071a2a 30%, #03101a 70%, #000814 100%);
     --card:#071428;
     --accent1:#ff5edf;
     --accent2:#00f5a0;
@@ -141,6 +141,10 @@
     </div>
     <footer id="hint">Stored locally using <code>localStorage</code>.</footer>
   </div>
+    <!-- worldy background layers -->
+    <div class="bg-nebula" aria-hidden="true"></div>
+    <div class="bg-stars" aria-hidden="true"></div>
+    <div class="planet" aria-hidden="true"></div>
 </div>
 
 <script>
@@ -176,16 +180,6 @@ function confettiBurst() {
 const g=document.getElementById('g'), i=document.getElementById('i'),
       s=document.getElementById('s'), c=document.getElementById('c'),
       hint=document.getElementById('hint');
-s.onclick = () => {
-  const v = i.value.trim();
-  if(v) localStorage.setItem('name', v);
-  else localStorage.removeItem('name');
-  render(v, true);
-  hint.textContent = v ? 'Saved — refresh to see persistence!' : 'Cleared — no name stored.';
-  if(v) confettiBurst();
-}
-c.onclick = () => { localStorage.removeItem('name'); i.value=''; render('', true); hint.textContent='Cleared.' }
-i.addEventListener('keydown', e=>{ if(e.key==='Enter') s.click() })
 // 3D card tilt
 const card = document.querySelector('.card');
 document.addEventListener('mousemove', (e) => {
@@ -200,15 +194,20 @@ document.addEventListener('mouseleave', ()=> card.style.transform='rotateX(0deg)
 
 function normalizeName(v){
   if(v === null || v === undefined) return '';
-  return String(v).trim();
+  const s = String(v).trim();
+  if(!s) return '';
+  const low = s.toLowerCase();
+  if(low === 'null' || low === 'undefined') return '';
+  return s;
 }
 
 function render(name, bounce=false){
   const safe = normalizeName(name);
   const text = safe ? `Hello, ${safe}!` : 'Hello, World!';
   g.textContent = text;
-  // keep waving emoji visually present
-  g.prepend(document.querySelector('.wave'));
+  // keep waving emoji visually present (guard against null)
+  const waveEl = document.querySelector('.wave');
+  if(waveEl) g.prepend(waveEl);
   // set data-text for pseudo 3D layer
   g.setAttribute('data-text', text);
   if(bounce){ g.classList.remove('bounce'); void g.offsetWidth; g.classList.add('bounce'); }
